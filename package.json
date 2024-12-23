@@ -1,0 +1,28 @@
+{
+  "name": "tasko-backend",
+  "version": "1.0.0",
+  "description": "the backend logic for the tasko app",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/athoug/task-tracker-backend.git"
+  },
+  "keywords": [
+    "node",
+    "tasko",
+    "app",
+    "backend"
+  ],
+  "author": "athoug",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/athoug/task-tracker-backend/issues"
+  },
+  "homepage": "https://github.com/athoug/task-tracker-backend#readme",
+  "dependencies": {
+    "mongoose": "^8.9.2"
+  }
+}
