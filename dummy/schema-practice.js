@@ -1,5 +1,5 @@
-const connect = require('./connect');
-const Kitten = require('./models/kitten');
+const connect = require('../connect');
+const Kitten = require('./kitten');
 
 const connectionURL = 'mongodb://localhost:27017/test';
 connect(connectionURL)

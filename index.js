@@ -6,7 +6,7 @@ connect(connectionURL)
 	.then(async (connection) => {
 		console.log('app connected to database - ' + connection);
 
-		const athoug = new User({ name: 'athoug', email: 'athoug@gmail.com' });
+		const athoug = new User({ name: 'Laama', email: 'laama@gmail.com' });
 		await athoug.save();
 
 		console.log(athoug.name, athoug.email);
