@@ -20,11 +20,11 @@ const weekSchema = new mongoose.Schema(
 			type: Number,
 			required: true,
 		},
-		StartDate: {
+		startDate: {
 			type: Date,
 			required: true,
 		},
-		EndDate: {
+		endDate: {
 			type: Date,
 			required: true,
 		},
