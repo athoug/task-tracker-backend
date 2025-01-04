@@ -1,3 +1,4 @@
+const { findByIdAndDelete } = require('../../models/user');
 const Week = require('../../models/week');
 // TODO - import the task model
 
@@ -26,5 +27,74 @@ exports.createWeek = async (req, res) => {
 	} catch (error) {
 		console.error(error);
 		res.status(500).json({ error: 'Failed to create week' });
+	}
+};
+
+// get all weeks for specific user
+exports.getAllWeeksForUser = async (req, res) => {
+	try {
+		const { userId } = req.params;
+
+		// Find all weeks that belong to this user
+		const weeks = await Week.find({ user: userId })
+			.populate('user')
+			.sort({ startDate: 1 });
+
+		res.status(200).json(weeks);
+	} catch (error) {
+		console.error(error);
+		res.status(500).json({ error: 'Failed to fetch weeks' });
+	}
+};
+
+// get a single week by id
+exports.getWeekById = async (req, res) => {
+	try {
+		const { id } = req.params;
+		const week = await Week.findById(id);
+
+		if (!week) {
+			return res.status(404).json({ error: 'Week not found' });
+		}
+
+		res.status(200).json(week);
+	} catch (error) {
+		console.error(error);
+		res.status(500).json({ error: 'Failed to fetch week' });
+	}
+};
+
+// Update a week
+exports.updateWeek = async (req, res) => {
+	try {
+		const { id } = req.params;
+		const updates = req.body;
+
+		const updateWeek = await Week.findByIdAndUpdate(id, updates, { new: true });
+		if (!updateWeek) {
+			return res.status(404).json({ error: 'Week not found' });
+		}
+
+		res.status(200).json(updateWeek);
+	} catch (error) {
+		console.error(error);
+		res.status(500).json({ error: 'Failed to update week' });
+	}
+};
+
+// delete a week
+exports.deleteWeek = async (req, res) => {
+	try {
+		const { id } = req.params;
+
+		const deletedWeek = await Week.findByIdAndDelete(id);
+		if (!deletedWeek) {
+			return res.status(404).json({ error: 'Week not found' });
+		}
+
+		res.status(200).json({ message: 'Week deleted successfully' });
+	} catch (error) {
+		console.error(error);
+		res.status(500).json({ error: 'Failed to delete week' });
 	}
 };
