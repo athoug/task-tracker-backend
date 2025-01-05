@@ -1,3 +1,5 @@
+const bcrypt = require('bcrypt');
+const jwt = require('jsonwebtoken');
 const User = require('../../models/user');
 
 exports.register = async (req, res) => {
@@ -11,10 +13,15 @@ exports.register = async (req, res) => {
 			return res.status(400).json({ error: 'User already exists' });
 		}
 
-		// TODO: Hash password
+		// Hash password
+		const hashedPassword = await bcrypt.hash(password, 10);
 
 		// create and save user
-		const newUser = new User({ name, email, password });
+		const newUser = new User({
+			name,
+			email,
+			password: hashedPassword,
+		});
 		const savedUser = await newUser.save();
 
 		// respond to request
@@ -45,14 +52,17 @@ exports.login = async (req, res) => {
 		}
 
 		// compare the password
-		// TODO: add bcrypt part - for now it's simple conditional check
-		const isMatch = password == user.password;
+		const isMatch = await bcrypt.compare(password, user.password);
 		if (!isMatch) {
 			return res.status(400).json({ error: 'Invalid credentials' });
 		}
 
-		// TODO: Generate JWT
-		const token = 'feoisjnwseflj';
+		// Generate JWT
+		const token = jwt.sign(
+			{ userId: user._id },
+			process.env.JWT_SECRET, // e.g., "mysecret" (store in .env)
+			{ expiresIn: '1d' } // token valid for 1 day
+		);
 
 		res.status(202).json({
 			message: 'Login successful',
