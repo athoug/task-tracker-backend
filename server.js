@@ -6,6 +6,7 @@ const cors = require('cors');
 // import route files
 const userRoutes = require('./api/routes/userRoutes');
 const weekRoutes = require('./api/routes/weekRoutes');
+const taskRoutes = require('./api/routes/taskRoutes');
 
 const app = express();
 
@@ -28,6 +29,7 @@ mongoose
 // Route registration
 app.use('/api/users', userRoutes);
 app.use('/api/weeks', weekRoutes);
+app.use('/api/tasks', taskRoutes);
 
 app.get('/', (req, res) => {
 	res.send('Backend is running');

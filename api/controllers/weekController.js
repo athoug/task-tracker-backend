@@ -1,6 +1,6 @@
 const { findByIdAndDelete } = require('../../models/user');
 const Week = require('../../models/week');
-// TODO - import the task model
+const Task = require('../../models/task');
 
 // creating a new week for the user
 exports.createWeek = async (req, res) => {
@@ -96,5 +96,38 @@ exports.deleteWeek = async (req, res) => {
 	} catch (error) {
 		console.error(error);
 		res.status(500).json({ error: 'Failed to delete week' });
+	}
+};
+
+// create the method to Generate a weekly review
+exports.getWeeklyReview = async (req, res) => {
+	try {
+		const { id } = req.params;
+		const week = await Week.findById(id);
+
+		if (!week) {
+			return res.status(404).json({ error: 'Week not found' });
+		}
+		// Find all tasks for this week
+		const tasks = await Task.find({ week: id });
+
+		if (!tasks) {
+			return res.status(404).json({ error: 'No tasks found' });
+		}
+
+		// Example review data
+		const reviewData = {
+			week,
+			totalTasks: tasks.length,
+			tasksCompleted: tasks.filter((task) =>
+				task.logs.some((log) => log.status === 'complete')
+			).length,
+			// Additional stats as needed
+		};
+
+		res.status(200).json(reviewData);
+	} catch (error) {
+		console.error(error);
+		res.status(500).json({ error: 'Failed to generate weekly review' });
 	}
 };

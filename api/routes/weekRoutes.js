@@ -13,4 +13,6 @@ router.patch('/:id', weekController.updateWeek);
 
 router.delete('/:id', weekController.deleteWeek);
 
+router.get('/:id/review', weekController.getWeeklyReview);
+
 module.exports = router;
