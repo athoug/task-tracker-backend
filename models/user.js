@@ -15,11 +15,17 @@ const userSchema = new mongoose.Schema(
 			type: String,
 			default: '../assets/images/avatar-w.jpg',
 		},
-		// TODO: You’d normally hash the password before saving (via bcrypt or similar).
 		password: {
 			type: String,
 			required: true,
 		},
+		emailVerified: {
+			type: Boolean,
+			default: false,
+		},
+		emailVerificationToken: { type: String },
+		passwordResetToken: { type: String },
+		passwordResetExpires: { type: Date },
 	},
 	{ timestamps: true } // adds createdAt and updatedAt automatically.
 );
