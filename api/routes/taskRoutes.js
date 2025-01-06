@@ -1,18 +1,19 @@
 const express = require('express');
 const router = express.Router();
 const taskController = require('../controllers/taskController');
+const { authMiddleware } = require('../middleware/auth');
 
-router.post('/', taskController.createTask);
+router.post('/', authMiddleware, taskController.createTask);
 
 // Get tasks (optionally filter by ?user=xxx or ?week=xxx)
-router.get('/', taskController.getAllTasks);
+router.get('/', authMiddleware, taskController.getAllTasks);
 
-router.get('/:id', taskController.getTaskById);
+router.get('/:id', authMiddleware, taskController.getTaskById);
 
-router.patch('/:id', taskController.updateTask);
+router.patch('/:id', authMiddleware, taskController.updateTask);
 
-router.delete('/:id', taskController.deleteTask);
+router.delete('/:id', authMiddleware, taskController.deleteTask);
 
-router.patch('/:id/logs', taskController.updateTaskLog);
+router.patch('/:id/logs', authMiddleware, taskController.updateTaskLog);
 
 module.exports = router;

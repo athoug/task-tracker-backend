@@ -2,12 +2,13 @@ const Task = require('../../models/task');
 
 exports.createTask = async (req, res) => {
 	try {
-		const { user, week, name, description, category, timesPerWeek, startDate } =
+		const userId = req.user._id; // from authMiddleware
+		const { week, name, description, category, timesPerWeek, startDate } =
 			req.body;
 
 		const newTask = new Task({
-			user,
-			week,
+			user: userId,
+			week, // you still need the "week" ID from the body, or it might come from route param
 			name,
 			description,
 			category,
@@ -27,16 +28,16 @@ exports.createTask = async (req, res) => {
 exports.getAllTasks = async (req, res) => {
 	try {
 		// check the query string - ?user=xxx&week=yyy
-		const { user, week } = req.query;
+		const userId = req.user._id;
+		// optional filter by week from query: ?week=12345
+		const { week } = req.query;
+
 		// create a query object to pass to the orm
-		const query = {};
-		// check if i have a user or a week
-		if (user) query.user = user;
+		const query = { user: userId };
+		// check if i have a week
 		if (week) query.week = week;
 
-		const tasks = await Task.find(query)
-			.populate('user', 'name email')
-			.populate('week');
+		const tasks = await Task.find(query).populate('week');
 
 		if (!tasks) {
 			return res.status(404).json({ error: 'Tasks not found' });
@@ -77,9 +78,7 @@ exports.updateTask = async (req, res) => {
 
 		const updatedTask = await Task.findByIdAndUpdate(id, updates, {
 			new: true,
-		})
-			.populate('user', 'name email')
-			.populate('week');
+		}).populate('week');
 
 		if (!updatedTask) {
 			return res.status(404).json({ error: 'Task not found' });

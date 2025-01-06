@@ -9,10 +9,12 @@ exports.createWeek = async (req, res) => {
 		// or from req.body (not recommended). Usually you'd do something like:
 		// const userId = req.user._id;
 		// but for simplicity, let's assume it comes from req.body:
-		const { user, weekNumber, year, startDate, endDate } = req.body;
+		// user is set by authMiddleware, e.g. { _id: "64f512..." }
+		const userId = req.user._id;
+		const { weekNumber, year, startDate, endDate } = req.body;
 
 		const newWeek = new Week({
-			user,
+			user: userId,
 			weekNumber,
 			year,
 			startDate,
@@ -33,7 +35,7 @@ exports.createWeek = async (req, res) => {
 // get all weeks for specific user
 exports.getAllWeeksForUser = async (req, res) => {
 	try {
-		const { userId } = req.params;
+		const userId = req.user._id;
 
 		// Find all weeks that belong to this user
 		const weeks = await Week.find({ user: userId })
