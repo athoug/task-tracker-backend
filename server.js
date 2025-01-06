@@ -13,6 +13,7 @@ const app = express();
 // middleware
 app.use(cors());
 app.use(express.json());
+app.use('/uploads', express.static('uploads'));
 
 // connect to MongoDB
 const { MONGO_URI, PORT } = process.env;

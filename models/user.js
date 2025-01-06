@@ -11,9 +11,9 @@ const userSchema = new mongoose.Schema(
 			required: true,
 			unique: true,
 		},
-		profileIcon: {
+		avatar: {
 			type: String,
-			default: '../assets/images/avatar-w.jpg',
+			default: null,
 		},
 		password: {
 			type: String,

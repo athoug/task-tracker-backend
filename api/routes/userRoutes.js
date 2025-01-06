@@ -1,6 +1,8 @@
 const express = require('express');
 const router = express.Router();
 const userController = require('../controllers/userController');
+const upload = require('../middleware/upload');
+const { authMiddleware } = require('../middleware/auth');
 
 // register a user
 router.post('/register', userController.register);
@@ -19,5 +21,13 @@ router.post('/password-reset', userController.requestPasswordReset);
 
 // reset password
 router.post('/reset-password', userController.resetPassword);
+
+// upload profile image
+router.patch(
+	'/profile-image',
+	authMiddleware,
+	upload.single('profileImage'), // Multer middleware
+	userController.uploadProfileImage
+);
 
 module.exports = router;

@@ -241,3 +241,42 @@ exports.resetPassword = async (req, res) => {
 		res.status(500).json({ error: 'Failed to reset password' });
 	}
 };
+
+exports.uploadProfileImage = async (req, res) => {
+	try {
+		const userId = req.user._id;
+
+		// Multer places the file info in req.file
+		if (!req.file) {
+			return res
+				.status(400)
+				.json({ error: 'No file uploaded or invalid file type' });
+		}
+
+		// For a local approach, the file path might be something like "uploads/avatar-123.png"
+		const profileImagePath = req.file.path;
+
+		// find the user in the database and update
+		const user = await User.findByIdAndUpdate(
+			userId,
+			{ avatar: profileImagePath },
+			{ new: true }
+		);
+
+		if (!user) {
+			return res.status(404).json({ error: 'User not found' });
+		}
+
+		// Respond with user info (excluding sensitive data)
+		return res.status(200).json({
+			message: 'Profile image uploaded successfully',
+			user: {
+				name: user.name,
+				profileImage: user.profileImage,
+			},
+		});
+	} catch (error) {
+		console.error(error);
+		res.status(500).json({ error: 'Failed to upload profile image' });
+	}
+};
