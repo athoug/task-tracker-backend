@@ -18,10 +18,7 @@ app.use("/uploads", express.static("uploads"));
 // connect to MongoDB
 const { MONGO_URI, PORT } = process.env;
 mongoose
-	.connect(MONGO_URI, {
-		useNewUrlParser: true,
-		useUnifiedTopology: true,
-	})
+	.connect(MONGO_URI)
 	.then(() => console.log("MongoDB (Atlas) connected"))
 	.catch((err) => {
 		console.error("MongoDB connection error:", err);
