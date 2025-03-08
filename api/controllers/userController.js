@@ -1,8 +1,8 @@
-const bcrypt = require('bcrypt');
-const jwt = require('jsonwebtoken');
-const crypto = require('crypto');
-const User = require('../../models/user');
-const { sendEmail } = require('../../utils/email');
+const bcrypt = require("bcrypt");
+const jwt = require("jsonwebtoken");
+const crypto = require("crypto");
+const User = require("../../models/user");
+const { sendEmail } = require("../../utils/email");
 
 exports.register = async (req, res) => {
 	try {
@@ -12,7 +12,7 @@ exports.register = async (req, res) => {
 		// 1a. check if the user exists
 		const existingUser = await User.findOne({ email });
 		if (existingUser) {
-			return res.status(400).json({ error: 'User already exists' });
+			return res.status(400).json({ error: "User already exists" });
 		}
 
 		// 1b. Hash password
@@ -27,7 +27,7 @@ exports.register = async (req, res) => {
 		});
 
 		// 1d. Generate an email verification token
-		const emailToken = crypto.randomBytes(20).toString('hex');
+		const emailToken = crypto.randomBytes(20).toString("hex");
 		newUser.emailVerificationToken = emailToken;
 
 		// 1e. Save user
@@ -38,15 +38,16 @@ exports.register = async (req, res) => {
 		// Example: http://localhost:3000/verify-email?token=xxx
 		// You might have a dedicated endpoint on your frontend to handle email verification
 
-		await sendEmail({
-			to: savedUser.email,
-			subject: 'Please Verify Your Email',
-			html: `
-        <h3>Welcome, ${savedUser.name}!</h3>
-        <p>Click the link below to verify your email:</p>
-        <a href="${verifyLink}">Verify Email</a>
-      `,
-		});
+		// TODO: make this work with real mailtrap later
+		// await sendEmail({
+		// 	to: savedUser.email,
+		// 	subject: 'Please Verify Your Email',
+		// 	html: `
+		//     <h3>Welcome, ${savedUser.name}!</h3>
+		//     <p>Click the link below to verify your email:</p>
+		//     <a href="${verifyLink}">Verify Email</a>
+		//   `,
+		// });
 
 		// respond to request
 		res.status(201).json({
@@ -60,7 +61,7 @@ exports.register = async (req, res) => {
 		});
 	} catch (error) {
 		console.error(error);
-		res.status(500).json({ error: 'Failed to register user' });
+		res.status(500).json({ error: "Failed to register user" });
 	}
 };
 
@@ -72,13 +73,13 @@ exports.login = async (req, res) => {
 		// find the user by email
 		const user = await User.findOne({ email });
 		if (!user) {
-			return res.status(400).json({ error: 'Invalid email or password' });
+			return res.status(400).json({ error: "Invalid email or password" });
 		}
 
 		// compare the password
 		const isMatch = await bcrypt.compare(password, user.password);
 		if (!isMatch) {
-			return res.status(400).json({ error: 'Invalid email or password' });
+			return res.status(400).json({ error: "Invalid email or password" });
 		}
 
 		// OPTIONAL: If you want to enforce email verification before login:
@@ -90,11 +91,11 @@ exports.login = async (req, res) => {
 		const token = jwt.sign(
 			{ userId: user._id },
 			process.env.JWT_SECRET, // e.g., "mysecret" (store in .env)
-			{ expiresIn: '1d' } // token valid for 1 day
+			{ expiresIn: "1d" } // token valid for 1 day
 		);
 
 		res.status(202).json({
-			message: 'Login successful',
+			message: "Login successful",
 			token,
 			user: {
 				_id: user._id,
@@ -105,7 +106,7 @@ exports.login = async (req, res) => {
 		});
 	} catch (error) {
 		console.error(error);
-		res.status(500).json({ error: 'Failed to login' });
+		res.status(500).json({ error: "Failed to login" });
 	}
 };
 
@@ -114,22 +115,22 @@ exports.resendVerificationEmail = async (req, res) => {
 		const { email } = req.body;
 		const user = await User.findOne({ email });
 		if (!user) {
-			return res.status(400).json({ error: 'No user found with that email' });
+			return res.status(400).json({ error: "No user found with that email" });
 		}
 
 		if (user.emailVerified) {
-			return res.status(400).json({ error: 'Email already verified' });
+			return res.status(400).json({ error: "Email already verified" });
 		}
 
 		// Generate a new verification token
-		const emailToken = crypto.randomBytes(20).toString('hex');
+		const emailToken = crypto.randomBytes(20).toString("hex");
 		user.emailVerificationToken = emailToken;
 		await user.save();
 
 		const verifyLink = `${process.env.CLIENT_URL}/verify-email?token=${emailToken}`;
 		await sendEmail({
 			to: user.email,
-			subject: 'Verify Your Email',
+			subject: "Verify Your Email",
 			html: `
         <p>Please verify your email by clicking the link below:</p>
         <a href="${verifyLink}">Verify Email</a>
@@ -137,11 +138,11 @@ exports.resendVerificationEmail = async (req, res) => {
 		});
 
 		return res.status(200).json({
-			message: 'Verification email resent. Please check your inbox.',
+			message: "Verification email resent. Please check your inbox.",
 		});
 	} catch (error) {
 		console.error(error);
-		res.status(500).json({ error: 'Error resending verification email' });
+		res.status(500).json({ error: "Error resending verification email" });
 	}
 };
 
@@ -149,13 +150,13 @@ exports.verifyEmail = async (req, res) => {
 	try {
 		const { token } = req.query; // e.g. /verify-email?token=xyz
 		if (!token) {
-			return res.status(400).json({ error: 'No token provided' });
+			return res.status(400).json({ error: "No token provided" });
 		}
 
 		// find user by token
 		const user = await User.findOne({ emailVerificationToken: token });
 		if (!user) {
-			return res.status(400).json({ error: 'invalid or expired token' });
+			return res.status(400).json({ error: "invalid or expired token" });
 		}
 
 		// mark as verified
@@ -164,7 +165,7 @@ exports.verifyEmail = async (req, res) => {
 		await user.save();
 
 		return res.status(200).json({
-			message: 'Email verified successfully. You can now log in.',
+			message: "Email verified successfully. You can now log in.",
 		});
 	} catch (error) {}
 };
@@ -175,11 +176,11 @@ exports.requestPasswordReset = async (req, res) => {
 
 		const user = await User.findOne({ email });
 		if (!user) {
-			return res.status(400).json({ error: 'Invalid request' });
+			return res.status(400).json({ error: "Invalid request" });
 		}
 
 		// Generate reset token + expiration (1 hour from now)
-		const resetToken = crypto.randomBytes(20).toString('hex');
+		const resetToken = crypto.randomBytes(20).toString("hex");
 		user.passwordResetToken = resetToken;
 		user.passwordResetExpires = Date.now() + 3600000; // 1 hour in ms
 		await user.save();
@@ -188,7 +189,7 @@ exports.requestPasswordReset = async (req, res) => {
 		const resetLink = `${process.env.CLIENT_URL}/reset-password?token=${resetToken}`;
 		await sendEmail({
 			to: user.email,
-			subject: 'Password Reset Request',
+			subject: "Password Reset Request",
 			html: `
 				 <p>You requested a password reset. Click the link below to set a new password:</p>
 				 <a href="${resetLink}">Reset Password</a>
@@ -198,11 +199,11 @@ exports.requestPasswordReset = async (req, res) => {
 		});
 
 		return res.status(200).json({
-			message: 'Password reset email sent. Please check your inbox.',
+			message: "Password reset email sent. Please check your inbox.",
 		});
 	} catch (error) {
 		console.error(error);
-		res.status(500).json({ error: 'Failed to request password reset' });
+		res.status(500).json({ error: "Failed to request password reset" });
 	}
 };
 
@@ -211,7 +212,7 @@ exports.resetPassword = async (req, res) => {
 		const { token, newPassword } = req.body;
 
 		if (!token || !newPassword) {
-			return res.status(400).json({ error: 'Missing token or new password' });
+			return res.status(400).json({ error: "Missing token or new password" });
 		}
 
 		// find user by reset token
@@ -221,7 +222,7 @@ exports.resetPassword = async (req, res) => {
 		});
 
 		if (!user) {
-			return res.status(400).json({ error: 'Invalid or expired reset token' });
+			return res.status(400).json({ error: "Invalid or expired reset token" });
 		}
 
 		const hashedPassword = await bcrypt.hash(newPassword, 10);
@@ -232,10 +233,10 @@ exports.resetPassword = async (req, res) => {
 
 		return res
 			.status(200)
-			.json({ message: 'Password has been reset successfully.' });
+			.json({ message: "Password has been reset successfully." });
 	} catch (error) {
 		console.error(error);
-		res.status(500).json({ error: 'Failed to reset password' });
+		res.status(500).json({ error: "Failed to reset password" });
 	}
 };
 
@@ -247,7 +248,7 @@ exports.uploadProfileImage = async (req, res) => {
 		if (!req.file) {
 			return res
 				.status(400)
-				.json({ error: 'No file uploaded or invalid file type' });
+				.json({ error: "No file uploaded or invalid file type" });
 		}
 
 		// For a local approach, the file path might be something like "uploads/avatar-123.png"
@@ -261,12 +262,12 @@ exports.uploadProfileImage = async (req, res) => {
 		);
 
 		if (!user) {
-			return res.status(404).json({ error: 'User not found' });
+			return res.status(404).json({ error: "User not found" });
 		}
 
 		// Respond with user info (excluding sensitive data)
 		return res.status(200).json({
-			message: 'Profile image uploaded successfully',
+			message: "Profile image uploaded successfully",
 			user: {
 				name: user.name,
 				profileImage: user.profileImage,
@@ -274,6 +275,6 @@ exports.uploadProfileImage = async (req, res) => {
 		});
 	} catch (error) {
 		console.error(error);
-		res.status(500).json({ error: 'Failed to upload profile image' });
+		res.status(500).json({ error: "Failed to upload profile image" });
 	}
 };
