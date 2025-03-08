@@ -40,3 +40,6 @@ const port = PORT || 3000;
 app.listen(port, () => {
 	console.log(`Server is running on port ${port}`);
 });
+
+// For Vercel, export the app instead:
+module.exports = app;
