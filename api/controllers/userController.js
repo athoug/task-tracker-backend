@@ -5,6 +5,7 @@ const User = require("../../models/user");
 const { sendEmail } = require("../../utils/email");
 
 exports.register = async (req, res) => {
+	console.log("Register route started");
 	try {
 		// extract the data from the request
 		const { name, email, password } = req.body;
@@ -18,6 +19,7 @@ exports.register = async (req, res) => {
 		// 1b. Hash password
 		const hashedPassword = await bcrypt.hash(password, 10);
 
+		console.log("About to create user...");
 		// 1c. create and save user
 		const newUser = new User({
 			name,
@@ -49,6 +51,7 @@ exports.register = async (req, res) => {
 		//   `,
 		// });
 
+		console.log("User created, returning response");
 		// respond to request
 		res.status(201).json({
 			message: `hey ${name} you have register successfully. Please check your email to verify your account.`,

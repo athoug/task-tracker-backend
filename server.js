@@ -2,6 +2,7 @@ require("dotenv").config();
 const express = require("express");
 const mongoose = require("mongoose");
 const cors = require("cors");
+const { connectDB } = require("./connectDB");
 
 // import route files
 const userRoutes = require("./api/routes/userRoutes");
@@ -17,8 +18,7 @@ app.use("/uploads", express.static("uploads"));
 
 // connect to MongoDB
 const { MONGO_URI, PORT } = process.env;
-mongoose
-	.connect(MONGO_URI)
+connectDB()
 	.then(() => console.log("MongoDB (Atlas) connected"))
 	.catch((err) => {
 		console.error("MongoDB connection error:", err);
