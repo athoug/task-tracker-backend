@@ -109,7 +109,6 @@ exports.login = async (req, res) => {
 	}
 };
 
-// 3. SEND EMAIL VERIFICATION (in case the user wants to re-trigger verification)
 exports.resendVerificationEmail = async (req, res) => {
 	try {
 		const { email } = req.body;
@@ -146,7 +145,6 @@ exports.resendVerificationEmail = async (req, res) => {
 	}
 };
 
-// VERIFY EMAIL
 exports.verifyEmail = async (req, res) => {
 	try {
 		const { token } = req.query; // e.g. /verify-email?token=xyz
@@ -171,7 +169,6 @@ exports.verifyEmail = async (req, res) => {
 	} catch (error) {}
 };
 
-// request password reset
 exports.requestPasswordReset = async (req, res) => {
 	try {
 		const { email } = req.body;
