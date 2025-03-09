@@ -41,15 +41,15 @@ exports.register = async (req, res) => {
 		// You might have a dedicated endpoint on your frontend to handle email verification
 
 		// TODO: make this work with real mailtrap later
-		// await sendEmail({
-		// 	to: savedUser.email,
-		// 	subject: 'Please Verify Your Email',
-		// 	html: `
-		//     <h3>Welcome, ${savedUser.name}!</h3>
-		//     <p>Click the link below to verify your email:</p>
-		//     <a href="${verifyLink}">Verify Email</a>
-		//   `,
-		// });
+		await sendEmail({
+			to: savedUser.email,
+			subject: "Please Verify Your Email",
+			html: `
+		    <h3>Welcome, ${savedUser.name}!</h3>
+		    <p>Click the link below to verify your email:</p>
+		    <a href="${verifyLink}">Verify Email</a>
+		  `,
+		});
 
 		console.log("User created, returning response");
 		// respond to request
