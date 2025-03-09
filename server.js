@@ -2,7 +2,6 @@ require("dotenv").config();
 const express = require("express");
 const mongoose = require("mongoose");
 const cors = require("cors");
-const { connectDB } = require("./connectDB");
 
 // import route files
 const userRoutes = require("./api/routes/userRoutes");
@@ -18,7 +17,8 @@ app.use("/uploads", express.static("uploads"));
 
 // connect to MongoDB
 const { MONGO_URI, PORT } = process.env;
-connectDB()
+mongoose
+	.connect(MONGO_URI)
 	.then(() => console.log("MongoDB (Atlas) connected"))
 	.catch((err) => {
 		console.error("MongoDB connection error:", err);
@@ -37,6 +37,3 @@ const port = PORT || 3000;
 app.listen(port, () => {
 	console.log(`Server is running on port ${port}`);
 });
-
-// For Vercel, export the app instead:
-module.exports = app;
