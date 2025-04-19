@@ -1,6 +1,13 @@
-const mongoose = require('mongoose');
+const mongoose = require("mongoose");
 
-const allowedCategories = ['Work', 'Personal', 'Fitness', 'Hobby'];
+const allowedCategories = [
+	"health",
+	"financial",
+	"spiritual",
+	"relationships",
+	"career",
+	"hobbies",
+];
 
 const logSchema = new mongoose.Schema(
 	{
@@ -10,7 +17,7 @@ const logSchema = new mongoose.Schema(
 		},
 		status: {
 			type: String,
-			enum: ['complete', 'incomplete'],
+			enum: ["complete", "incomplete"],
 			required: true,
 		},
 		updatedAt: {
@@ -25,12 +32,12 @@ const taskSchema = new mongoose.Schema(
 	{
 		user: {
 			type: mongoose.Schema.Types.ObjectId,
-			ref: 'User',
+			ref: "User",
 			required: true,
 		},
 		week: {
 			type: mongoose.Schema.Types.ObjectId,
-			ref: 'Week',
+			ref: "Week",
 			required: true,
 		},
 		name: {
@@ -39,7 +46,7 @@ const taskSchema = new mongoose.Schema(
 		},
 		description: {
 			type: String,
-			default: '',
+			default: "",
 		},
 		category: {
 			type: String,
@@ -62,4 +69,4 @@ const taskSchema = new mongoose.Schema(
 	{ timestamps: true }
 );
 
-module.exports = mongoose.model('Task', taskSchema);
+module.exports = mongoose.model("Task", taskSchema);
