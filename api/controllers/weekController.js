@@ -189,7 +189,7 @@ exports.archiveFinishedWeek = async (req, res) => {
 
 		const currentWeek = await Week.findOne({
 			user: userId,
-			status: "active",
+			// status: "active",
 		}).sort({ startDate: -1 });
 
 		if (!currentWeek) {
