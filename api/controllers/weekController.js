@@ -140,7 +140,7 @@ exports.getCurrentWeek = async (req, res) => {
 		const userId = req.user._id;
 
 		// Find the latest week (assuming the most recent startDate is the active week)
-		const currentWeek = await Week.findOne({ user: userId })
+		const currentWeek = await Week.findOne({ user: userId, status: "active" })
 			.sort({ startDate: -1 }) // newest startDate first
 			.limit(1);
 

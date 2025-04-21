@@ -1,4 +1,4 @@
-const mongoose = require('mongoose');
+const mongoose = require("mongoose");
 
 const weekSchema = new mongoose.Schema(
 	{
@@ -9,7 +9,7 @@ const weekSchema = new mongoose.Schema(
 		*/
 		user: {
 			type: mongoose.Schema.Types.ObjectId,
-			ref: 'User',
+			ref: "User",
 			required: true,
 		},
 		weekNumber: {
@@ -28,8 +28,13 @@ const weekSchema = new mongoose.Schema(
 			type: Date,
 			required: true,
 		},
+		status: {
+			type: String,
+			enum: ["active", "archived"],
+			default: "active",
+		},
 	},
 	{ timestamps: true }
 );
 
-module.exports = mongoose.model('Week', weekSchema);
+module.exports = mongoose.model("Week", weekSchema);
