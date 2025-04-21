@@ -139,18 +139,86 @@ exports.getCurrentWeek = async (req, res) => {
 	try {
 		const userId = req.user._id;
 
-		// Find the latest week (assuming the most recent startDate is the active week)
-		const currentWeek = await Week.findOne({ user: userId, status: "active" })
-			.sort({ startDate: -1 }) // newest startDate first
-			.limit(1);
+		// Get the latest "active" week
+		let currentWeek = await Week.findOne({
+			user: userId,
+			status: "active",
+		}).sort({
+			startDate: -1,
+		});
+
+		const today = new Date();
+
+		if (currentWeek) {
+			const endDate = new Date(currentWeek.endDate);
+
+			if (today >= endDate) {
+				// Archive the finished week
+				currentWeek.status = "archived";
+				await currentWeek.save();
+
+				// Optionally: return archived flag
+				return res.status(200).json({
+					message: "Week has been archived",
+					archived: true,
+					archivedWeek: currentWeek,
+					currentWeek: null,
+				});
+			} else {
+				return res.status(200).json({
+					currentWeek,
+					archived: false,
+				});
+			}
+		} else {
+			// No active week
+			return res.status(200).json({
+				currentWeek: null,
+				archived: false,
+			});
+		}
+	} catch (error) {
+		console.error("Error getting current week:", error);
+		res.status(500).json({ error: "Failed to get current week" });
+	}
+};
+
+exports.archiveFinishedWeek = async (req, res) => {
+	try {
+		const userId = req.user._id;
+
+		const currentWeek = await Week.findOne({
+			user: userId,
+			status: "active",
+		}).sort({ startDate: -1 });
 
 		if (!currentWeek) {
-			return res.status(404).json({ error: "No active week found" });
+			return res
+				.status(404)
+				.json({ message: "No active week found", archived: false });
 		}
 
-		res.status(200).json(currentWeek);
+		const today = new Date();
+		const endDate = new Date(currentWeek.endDate);
+
+		if (today >= endDate) {
+			// Archive the week
+			currentWeek.status = "archived";
+			await currentWeek.save();
+
+			return res.status(200).json({
+				message: "Week archived successfully",
+				archived: true,
+				archivedWeek: currentWeek,
+			});
+		} else {
+			return res.status(200).json({
+				message: "Week still active",
+				archived: false,
+			});
+		}
 	} catch (error) {
-		console.error("Error fetching current week:", error);
-		res.status(500).json({ error: "Failed to fetch current week" });
+		console.error("Error archiving week:", error);
+		res.status(500).json({ error: "Failed to archive week", archived: false });
 	}
 };
