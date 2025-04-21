@@ -1,6 +1,6 @@
-const { findByIdAndDelete } = require('../../models/user');
-const Week = require('../../models/week');
-const Task = require('../../models/task');
+const { findByIdAndDelete } = require("../../models/user");
+const Week = require("../../models/week");
+const Task = require("../../models/task");
 
 // creating a new week for the user
 exports.createWeek = async (req, res) => {
@@ -28,7 +28,7 @@ exports.createWeek = async (req, res) => {
 		res.status(201).json(savedWeek);
 	} catch (error) {
 		console.error(error);
-		res.status(500).json({ error: 'Failed to create week' });
+		res.status(500).json({ error: "Failed to create week" });
 	}
 };
 
@@ -39,13 +39,13 @@ exports.getAllWeeksForUser = async (req, res) => {
 
 		// Find all weeks that belong to this user
 		const weeks = await Week.find({ user: userId })
-			.populate('user')
+			.populate("user")
 			.sort({ startDate: 1 });
 
 		res.status(200).json(weeks);
 	} catch (error) {
 		console.error(error);
-		res.status(500).json({ error: 'Failed to fetch weeks' });
+		res.status(500).json({ error: "Failed to fetch weeks" });
 	}
 };
 
@@ -56,13 +56,13 @@ exports.getWeekById = async (req, res) => {
 		const week = await Week.findById(id);
 
 		if (!week) {
-			return res.status(404).json({ error: 'Week not found' });
+			return res.status(404).json({ error: "Week not found" });
 		}
 
 		res.status(200).json(week);
 	} catch (error) {
 		console.error(error);
-		res.status(500).json({ error: 'Failed to fetch week' });
+		res.status(500).json({ error: "Failed to fetch week" });
 	}
 };
 
@@ -74,13 +74,13 @@ exports.updateWeek = async (req, res) => {
 
 		const updateWeek = await Week.findByIdAndUpdate(id, updates, { new: true });
 		if (!updateWeek) {
-			return res.status(404).json({ error: 'Week not found' });
+			return res.status(404).json({ error: "Week not found" });
 		}
 
 		res.status(200).json(updateWeek);
 	} catch (error) {
 		console.error(error);
-		res.status(500).json({ error: 'Failed to update week' });
+		res.status(500).json({ error: "Failed to update week" });
 	}
 };
 
@@ -91,13 +91,13 @@ exports.deleteWeek = async (req, res) => {
 
 		const deletedWeek = await Week.findByIdAndDelete(id);
 		if (!deletedWeek) {
-			return res.status(404).json({ error: 'Week not found' });
+			return res.status(404).json({ error: "Week not found" });
 		}
 
-		res.status(200).json({ message: 'Week deleted successfully' });
+		res.status(200).json({ message: "Week deleted successfully" });
 	} catch (error) {
 		console.error(error);
-		res.status(500).json({ error: 'Failed to delete week' });
+		res.status(500).json({ error: "Failed to delete week" });
 	}
 };
 
@@ -108,13 +108,13 @@ exports.getWeeklyReview = async (req, res) => {
 		const week = await Week.findById(id);
 
 		if (!week) {
-			return res.status(404).json({ error: 'Week not found' });
+			return res.status(404).json({ error: "Week not found" });
 		}
 		// Find all tasks for this week
 		const tasks = await Task.find({ week: id });
 
 		if (!tasks) {
-			return res.status(404).json({ error: 'No tasks found' });
+			return res.status(404).json({ error: "No tasks found" });
 		}
 
 		// Example review data
@@ -122,7 +122,7 @@ exports.getWeeklyReview = async (req, res) => {
 			week,
 			totalTasks: tasks.length,
 			tasksCompleted: tasks.filter((task) =>
-				task.logs.some((log) => log.status === 'complete')
+				task.logs.some((log) => log.status === "complete")
 			).length,
 			// Additional stats as needed
 		};
@@ -130,6 +130,27 @@ exports.getWeeklyReview = async (req, res) => {
 		res.status(200).json(reviewData);
 	} catch (error) {
 		console.error(error);
-		res.status(500).json({ error: 'Failed to generate weekly review' });
+		res.status(500).json({ error: "Failed to generate weekly review" });
+	}
+};
+
+// Get the most recent active week for the user
+exports.getCurrentWeek = async (req, res) => {
+	try {
+		const userId = req.user._id;
+
+		// Find the latest week (assuming the most recent startDate is the active week)
+		const currentWeek = await Week.findOne({ user: userId })
+			.sort({ startDate: -1 }) // newest startDate first
+			.limit(1);
+
+		if (!currentWeek) {
+			return res.status(404).json({ error: "No active week found" });
+		}
+
+		res.status(200).json(currentWeek);
+	} catch (error) {
+		console.error("Error fetching current week:", error);
+		res.status(500).json({ error: "Failed to fetch current week" });
 	}
 };
