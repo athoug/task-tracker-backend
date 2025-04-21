@@ -1,4 +1,4 @@
-const jwt = require('jsonwebtoken');
+const jwt = require("jsonwebtoken");
 
 exports.authMiddleware = async (req, res, next) => {
 	try {
@@ -7,16 +7,19 @@ exports.authMiddleware = async (req, res, next) => {
 		const authHeader = req.headers.authorization;
 
 		if (!authHeader) {
-			return res.status(401).json({ error: 'No authorization header' });
+			return res.status(401).json({ error: "No authorization header" });
 		}
 
-		const token = authHeader.split(' ')[1]; // after 'Bearer'
+		const token = authHeader.split(" ")[1]; // after 'Bearer'
+		console.log("🔐 Token received:", token);
+
 		if (!token) {
-			return res.status(401).json({ error: 'No token provided' });
+			return res.status(401).json({ error: "No token provided" });
 		}
 
 		// Verify token
 		const decoded = jwt.verify(token, process.env.JWT_SECRET);
+		console.log("✅ Decoded token:", decoded);
 		// The decoded object will contain whatever was signed, e.g. { userId: <someId>, iat, exp }
 
 		// Attach user info to req
@@ -24,7 +27,7 @@ exports.authMiddleware = async (req, res, next) => {
 
 		next(); // proceed to controller
 	} catch (error) {
-		console.error('authMiddleware error:', error);
-		res.status(401).json({ error: 'Invalid or expired token' });
+		console.error("authMiddleware error:", error);
+		res.status(401).json({ error: "Invalid or expired token" });
 	}
 };
