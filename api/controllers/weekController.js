@@ -167,7 +167,7 @@ exports.getCurrentWeek = async (req, res) => {
 			} else {
 				// ✅ Manually fetch tasks for this week
 				const tasks = await Task.find({ week: currentWeek._id });
-				return es.status(200).json({
+				return res.status(200).json({
 					currentWeek: {
 						...currentWeek.toObject(), // turn Mongoose doc into plain object
 						tasks, // attach the tasks array
