@@ -143,9 +143,11 @@ exports.getCurrentWeek = async (req, res) => {
 		let currentWeek = await Week.findOne({
 			user: userId,
 			status: "active",
-		}).sort({
-			startDate: -1,
-		});
+		})
+			.sort({
+				startDate: -1,
+			})
+			.populate("tasks");
 
 		const today = new Date();
 
@@ -165,8 +167,14 @@ exports.getCurrentWeek = async (req, res) => {
 					currentWeek: null,
 				});
 			} else {
-				return res.status(200).json({
-					currentWeek,
+				// ✅ Manually fetch tasks for this week
+				const tasks = await Task.find({ week: currentWeek._id });
+				return es.status(200).json({
+					currentWeek: {
+						...currentWeek.toObject(), // turn Mongoose doc into plain object
+						tasks, // attach the tasks array
+						tasksCount: tasks.length,
+					},
 					archived: false,
 				});
 			}
@@ -183,6 +191,7 @@ exports.getCurrentWeek = async (req, res) => {
 	}
 };
 
+// archive week when duration ends
 exports.archiveFinishedWeek = async (req, res) => {
 	try {
 		const userId = req.user._id;
