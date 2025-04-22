@@ -143,11 +143,9 @@ exports.getCurrentWeek = async (req, res) => {
 		let currentWeek = await Week.findOne({
 			user: userId,
 			status: "active",
-		})
-			.sort({
-				startDate: -1,
-			})
-			.populate("tasks");
+		}).sort({
+			startDate: -1,
+		});
 
 		const today = new Date();
 
