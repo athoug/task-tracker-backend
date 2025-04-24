@@ -61,6 +61,7 @@ exports.register = async (req, res) => {
 				email: savedUser.email,
 				profileIcon: savedUser.profileIcon,
 			},
+			token: emailToken,
 		});
 	} catch (error) {
 		console.error(error);
