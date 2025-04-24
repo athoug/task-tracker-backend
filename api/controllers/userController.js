@@ -52,6 +52,13 @@ exports.register = async (req, res) => {
 		});
 
 		console.log("User created, returning response");
+
+		// Generate JWT
+		const token = jwt.sign(
+			{ userId: user._id },
+			process.env.JWT_SECRET, // e.g., "mysecret" (store in .env)
+			{ expiresIn: "1d" } // token valid for 1 day
+		);
 		// respond to request
 		res.status(201).json({
 			message: `hey ${name} you have register successfully. Please check your email to verify your account.`,
@@ -61,7 +68,7 @@ exports.register = async (req, res) => {
 				email: savedUser.email,
 				profileIcon: savedUser.profileIcon,
 			},
-			token: emailToken,
+			token,
 		});
 	} catch (error) {
 		console.error(error);
