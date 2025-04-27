@@ -1,4 +1,4 @@
-const Task = require('../../models/task');
+const Task = require("../../models/task");
 
 exports.createTask = async (req, res) => {
 	try {
@@ -20,7 +20,7 @@ exports.createTask = async (req, res) => {
 		res.status(201).json(savedTask);
 	} catch (error) {
 		console.error(error);
-		res.status(500).json({ error: 'Failed to create task' });
+		res.status(500).json({ error: "Failed to create task" });
 	}
 };
 
@@ -37,16 +37,16 @@ exports.getAllTasks = async (req, res) => {
 		// check if i have a week
 		if (week) query.week = week;
 
-		const tasks = await Task.find(query).populate('week');
+		const tasks = await Task.find(query).populate("week");
 
 		if (!tasks) {
-			return res.status(404).json({ error: 'Tasks not found' });
+			return res.status(404).json({ error: "Tasks not found" });
 		}
 
 		res.status(200).json(tasks);
 	} catch (error) {
 		console.error(error);
-		res.status(500).json({ error: 'Failed to fetch tasks' });
+		res.status(500).json({ error: "Failed to fetch tasks" });
 	}
 };
 
@@ -56,17 +56,17 @@ exports.getTaskById = async (req, res) => {
 		const { id } = req.params;
 
 		const task = await Task.findById(id)
-			.populate('user', 'name email')
-			.populate('week');
+			.populate("user", "name email")
+			.populate("week");
 
 		if (!task) {
-			return res.status(404).json({ error: 'Task not found' });
+			return res.status(404).json({ error: "Task not found" });
 		}
 
 		res.status(200).json(task);
 	} catch (error) {
 		console.error(error);
-		res.status(500).json({ error: 'Failed to fetch task' });
+		res.status(500).json({ error: "Failed to fetch task" });
 	}
 };
 
@@ -78,16 +78,16 @@ exports.updateTask = async (req, res) => {
 
 		const updatedTask = await Task.findByIdAndUpdate(id, updates, {
 			new: true,
-		}).populate('week');
+		}).populate("week");
 
 		if (!updatedTask) {
-			return res.status(404).json({ error: 'Task not found' });
+			return res.status(404).json({ error: "Task not found" });
 		}
 
 		res.status(200).json(updatedTask);
 	} catch (error) {
 		console.error(error);
-		res.status(500).json({ error: 'Failed to update task' });
+		res.status(500).json({ error: "Failed to update task" });
 	}
 };
 
@@ -99,15 +99,30 @@ exports.deleteTask = async (req, res) => {
 		const deletedTask = await Task.findByIdAndDelete(id);
 
 		if (!deletedTask) {
-			return res.status(404).json({ error: 'Task not found' });
+			return res.status(404).json({ error: "Task not found" });
+		}
+
+		const weekId = deletedTask.week;
+		let weekDeleted = false;
+		// Check if any tasks remain in this week
+		const tasksRemaining = await Task.find({ week: weekId });
+		if (tasksRemaining.length === 0) {
+			// No tasks left ➔ Delete the week too
+			await Week.findByIdAndDelete(weekId);
+			weekDeleted = true;
+			console.log(`Deleted empty week: ${weekId}`);
 		}
 
 		res
 			.status(200)
-			.json({ message: 'Task deleted successfully', deleted: deletedTask });
+			.json({
+				message: "Task deleted successfully",
+				deleted: deletedTask,
+				weekDeleted,
+			});
 	} catch (error) {
 		console.error(error);
-		res.status(500).json({ error: 'Failed to delete task' });
+		res.status(500).json({ error: "Failed to delete task" });
 	}
 };
 
@@ -117,8 +132,8 @@ exports.updateTaskLog = async (req, res) => {
 		const { id } = req.params;
 		const { status } = req.body; // "complete" or "incomplete"
 
-		if (!['complete', 'incomplete'].includes(status)) {
-			return res.status(400).json({ error: 'Invalid status' });
+		if (!["complete", "incomplete"].includes(status)) {
+			return res.status(400).json({ error: "Invalid status" });
 		}
 
 		const logEntry = { date: new Date(), status, updateAt: new Date() };
@@ -130,11 +145,11 @@ exports.updateTaskLog = async (req, res) => {
 		);
 
 		if (!updatedTask) {
-			return res.status(404).json({ error: 'Task not found' });
+			return res.status(404).json({ error: "Task not found" });
 		}
 		res.json(updatedTask);
 	} catch (error) {
 		console.error(error);
-		res.status(500).json({ error: 'Failed to update task log' });
+		res.status(500).json({ error: "Failed to update task log" });
 	}
 };
