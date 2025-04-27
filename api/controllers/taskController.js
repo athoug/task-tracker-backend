@@ -1,4 +1,5 @@
 const Task = require("../../models/task");
+const Week = require("../../models/week");
 
 exports.createTask = async (req, res) => {
 	try {
@@ -113,13 +114,11 @@ exports.deleteTask = async (req, res) => {
 			console.log(`Deleted empty week: ${weekId}`);
 		}
 
-		res
-			.status(200)
-			.json({
-				message: "Task deleted successfully",
-				deleted: deletedTask,
-				weekDeleted,
-			});
+		res.status(200).json({
+			message: "Task deleted successfully",
+			deleted: deletedTask,
+			weekDeleted,
+		});
 	} catch (error) {
 		console.error(error);
 		res.status(500).json({ error: "Failed to delete task" });
