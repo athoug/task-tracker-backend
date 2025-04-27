@@ -1,4 +1,3 @@
-const { findByIdAndDelete } = require("../../models/user");
 const Week = require("../../models/week");
 const Task = require("../../models/task");
 
