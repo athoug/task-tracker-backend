@@ -20,4 +20,6 @@ router.get("/:id/review", authMiddleware, weekController.getWeeklyReview);
 
 router.post("/archive", authMiddleware, weekController.archiveFinishedWeek);
 
+router.get("/archived", authMiddleware, weekController.getArchivedWeeks);
+
 module.exports = router;
