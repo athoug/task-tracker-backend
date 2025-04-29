@@ -100,7 +100,6 @@ exports.deleteWeek = async (req, res) => {
 	}
 };
 
-// create the method to Generate a weekly review
 exports.getWeeklyReview = async (req, res) => {
 	try {
 		const { id } = req.params;
@@ -109,21 +108,30 @@ exports.getWeeklyReview = async (req, res) => {
 		if (!week) {
 			return res.status(404).json({ error: "Week not found" });
 		}
-		// Find all tasks for this week
+
+		// Fetch all tasks for this week
 		const tasks = await Task.find({ week: id });
 
-		if (!tasks) {
+		if (!tasks || tasks.length === 0) {
 			return res.status(404).json({ error: "No tasks found" });
 		}
 
-		// Example review data
+		const tasksCompleted = tasks.reduce(
+			(count, task) =>
+				count + task.logs.filter((log) => log.status === "complete").length,
+			0
+		);
+
+		const totalTasks = tasks.reduce(
+			(sum, task) => sum + (task.timesPerWeek || 0),
+			0
+		);
+
 		const reviewData = {
 			week,
-			totalTasks: tasks.length,
-			tasksCompleted: tasks.filter((task) =>
-				task.logs.some((log) => log.status === "complete")
-			).length,
-			// Additional stats as needed
+			tasks,
+			tasksCompleted,
+			totalTasks,
 		};
 
 		res.status(200).json(reviewData);
