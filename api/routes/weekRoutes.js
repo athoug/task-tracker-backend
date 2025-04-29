@@ -18,6 +18,6 @@ router.delete("/:id", authMiddleware, weekController.deleteWeek);
 
 router.get("/:id/review", authMiddleware, weekController.getWeeklyReview);
 
-router.get("/archive", authMiddleware, weekController.archiveFinishedWeek);
+router.post("/archive", authMiddleware, weekController.archiveFinishedWeek);
 
 module.exports = router;
