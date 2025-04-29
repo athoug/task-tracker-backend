@@ -228,3 +228,18 @@ exports.archiveFinishedWeek = async (req, res) => {
 		res.status(500).json({ error: "Failed to archive week", archived: false });
 	}
 };
+
+exports.getArchivedWeeks = async (req, res) => {
+	try {
+		const userId = req.user._id;
+		const archivedWeeks = await Week.find({
+			user: userId,
+			status: "archived",
+		}).sort({ startDate: -1 });
+
+		res.status(200).json(archivedWeeks);
+	} catch (error) {
+		console.error("Error fetching archived weeks:", error);
+		res.status(500).json({ error: "Failed to fetch archived weeks" });
+	}
+};
