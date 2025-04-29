@@ -232,12 +232,24 @@ exports.archiveFinishedWeek = async (req, res) => {
 exports.getArchivedWeeks = async (req, res) => {
 	try {
 		const userId = req.user._id;
-		const archivedWeeks = await Week.find({
-			user: userId,
-			status: "archived",
-		}).sort({ startDate: -1 });
 
-		res.status(200).json(archivedWeeks);
+		const archivedWeeks = await Week.find({ user: userId, status: "archived" })
+			.sort({ startDate: -1 })
+			.lean(); // <-- important to convert mongoose docs to plain objects
+
+		// For each week, find related tasks
+		const weeksWithTasks = await Promise.all(
+			archivedWeeks.map(async (week) => {
+				const tasks = await Task.find({ week: week._id });
+				return {
+					...week,
+					tasks,
+					tasksCount: tasks.length,
+				};
+			})
+		);
+
+		res.status(200).json(weeksWithTasks);
 	} catch (error) {
 		console.error("Error fetching archived weeks:", error);
 		res.status(500).json({ error: "Failed to fetch archived weeks" });
