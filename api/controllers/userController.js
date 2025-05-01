@@ -86,7 +86,7 @@ exports.login = async (req, res) => {
 		console.log("email", caseClearEmail);
 
 		// find the user by email
-		const user = await User.findOne({ caseClearEmail });
+		const user = await User.findOne({ email: caseClearEmail });
 		if (!user) {
 			return res.status(400).json({ error: "Invalid email or password" });
 		}
