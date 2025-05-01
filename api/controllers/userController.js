@@ -83,6 +83,7 @@ exports.login = async (req, res) => {
 		const { email, password } = req.body;
 
 		const caseClearEmail = email.toLowerCase();
+		console.log("email", caseClearEmail);
 
 		// find the user by email
 		const user = await User.findOne({ caseClearEmail });
