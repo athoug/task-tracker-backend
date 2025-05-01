@@ -293,3 +293,62 @@ exports.uploadProfileImage = async (req, res) => {
 		res.status(500).json({ error: "Failed to upload profile image" });
 	}
 };
+
+exports.updateEmail = async (req, res) => {
+	try {
+		const userId = req.user._id;
+		const { newEmail } = req.body;
+
+		if (!newEmail)
+			return res.status(400).json({ error: "New email is required" });
+
+		const userExists = await User.findOne({ email: newEmail.toLowerCase() });
+		if (userExists)
+			return res.status(400).json({ error: "Email already in use" });
+
+		const updatedUser = await User.findByIdAndUpdate(
+			userId,
+			{ email: newEmail.toLowerCase(), emailVerified: false },
+			{ new: true }
+		);
+
+		res.status(200).json({ message: "Email updated", user: updatedUser });
+	} catch (err) {
+		console.error(err);
+		res.status(500).json({ error: "Failed to update email" });
+	}
+};
+
+exports.updatePassword = async (req, res) => {
+	try {
+		const userId = req.user._id;
+		const { currentPassword, newPassword } = req.body;
+
+		const user = await User.findById(userId);
+		if (!user) return res.status(404).json({ error: "User not found" });
+
+		const isMatch = await bcrypt.compare(currentPassword, user.password);
+		if (!isMatch)
+			return res.status(400).json({ error: "Incorrect current password" });
+
+		const hashedPassword = await bcrypt.hash(newPassword, 10);
+		user.password = hashedPassword;
+		await user.save();
+
+		res.status(200).json({ message: "Password updated successfully" });
+	} catch (err) {
+		console.error(err);
+		res.status(500).json({ error: "Failed to update password" });
+	}
+};
+
+exports.deleteAccount = async (req, res) => {
+	try {
+		const userId = req.user._id;
+		await User.findByIdAndDelete(userId);
+		res.status(200).json({ message: "Account deleted successfully" });
+	} catch (err) {
+		console.error(err);
+		res.status(500).json({ error: "Failed to delete account" });
+	}
+};
