@@ -10,8 +10,9 @@ exports.register = async (req, res) => {
 		// extract the data from the request
 		const { name, email, password } = req.body;
 
+		const caseClearEmail = email.toLowerCase();
 		// 1a. check if the user exists
-		const existingUser = await User.findOne({ email });
+		const existingUser = await User.findOne({ caseClearEmail });
 		if (existingUser) {
 			return res.status(400).json({ error: "User already exists" });
 		}
@@ -23,7 +24,7 @@ exports.register = async (req, res) => {
 		// 1c. create and save user
 		const newUser = new User({
 			name,
-			email,
+			email: caseClearEmail,
 			password: hashedPassword,
 			emailVerified: false,
 		});
@@ -81,8 +82,10 @@ exports.login = async (req, res) => {
 		// extract the values from the body
 		const { email, password } = req.body;
 
+		const caseClearEmail = email.toLowerCase();
+
 		// find the user by email
-		const user = await User.findOne({ email });
+		const user = await User.findOne({ caseClearEmail });
 		if (!user) {
 			return res.status(400).json({ error: "Invalid email or password" });
 		}
