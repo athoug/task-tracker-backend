@@ -10,7 +10,7 @@ exports.register = async (req, res) => {
 		// extract the data from the request
 		const { name, email, password } = req.body;
 
-		const caseClearEmail = email.toLowerCase();
+		const caseClearEmail = email?.toLowerCase();
 		// 1a. check if the user exists
 		const existingUser = await User.findOne({ caseClearEmail });
 		if (existingUser) {
@@ -82,7 +82,7 @@ exports.login = async (req, res) => {
 		// extract the values from the body
 		const { email, password } = req.body;
 
-		const caseClearEmail = email.toLowerCase();
+		const caseClearEmail = email?.toLowerCase();
 		console.log("email", caseClearEmail);
 
 		// find the user by email
