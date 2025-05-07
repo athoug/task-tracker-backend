@@ -201,7 +201,8 @@ exports.requestPasswordReset = async (req, res) => {
 		await user.save();
 
 		// Send email with reset link
-		const resetLink = `${process.env.CLIENT_URL}/reset-password?token=${resetToken}`;
+		// const resetLink = `${process.env.CLIENT_URL}/reset-password?token=${resetToken}`;
+		const resetLink = `tasko://reset-password?token=${resetToken}`;
 		await sendEmail({
 			to: user.email,
 			subject: "Password Reset Request",
