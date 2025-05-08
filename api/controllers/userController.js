@@ -12,7 +12,7 @@ exports.register = async (req, res) => {
 
 		const caseClearEmail = email?.toLowerCase();
 		// 1a. check if the user exists
-		const existingUser = await User.findOne({ caseClearEmail });
+		const existingUser = await User.findOne({ email: caseClearEmail });
 		if (existingUser) {
 			return res.status(400).json({ error: "User already exists" });
 		}
@@ -83,7 +83,6 @@ exports.login = async (req, res) => {
 		const { email, password } = req.body;
 
 		const caseClearEmail = email?.toLowerCase();
-		console.log("email", caseClearEmail);
 
 		// find the user by email
 		const user = await User.findOne({ email: caseClearEmail });
@@ -128,7 +127,9 @@ exports.login = async (req, res) => {
 exports.resendVerificationEmail = async (req, res) => {
 	try {
 		const { email } = req.body;
-		const user = await User.findOne({ email });
+
+		const caseClearEmail = email?.toLowerCase();
+		const user = await User.findOne({ email: caseClearEmail });
 		if (!user) {
 			return res.status(400).json({ error: "No user found with that email" });
 		}
@@ -188,8 +189,9 @@ exports.verifyEmail = async (req, res) => {
 exports.requestPasswordReset = async (req, res) => {
 	try {
 		const { email } = req.body;
+		const caseClearEmail = email?.toLowerCase();
 
-		const user = await User.findOne({ email });
+		const user = await User.findOne({ email: caseClearEmail });
 		if (!user) {
 			return res.status(400).json({ error: "Invalid request" });
 		}
