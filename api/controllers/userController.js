@@ -86,6 +86,25 @@ exports.register = async (req, res) => {
 		});
 	} catch (error) {
 		console.error(error);
+		// Handle Mongoose validation errors
+		if (error.name === "ValidationError") {
+			const field = Object.keys(error.errors)[0]; // Get first field that failed
+			const message = error.errors[field].message;
+
+			return res.status(400).json({
+				error: message,
+				field,
+			});
+		}
+
+		// Handle duplicate email error (E11000 is duplicate key)
+		if (error.code === 11000 && error.keyPattern?.email) {
+			return res.status(400).json({
+				error: "Email already exists",
+				field: "email",
+			});
+		}
+
 		res.status(500).json({ error: "Failed to register user" });
 	}
 };
@@ -94,19 +113,35 @@ exports.login = async (req, res) => {
 	try {
 		// extract the values from the body
 		const { email, password } = req.body;
-
 		const caseClearEmail = email?.toLowerCase();
+
+		// Check for missing fields
+		if (!email || !password) {
+			const missingField = !email ? "email" : "password";
+			return res.status(400).json({
+				error: `${
+					missingField.charAt(0).toUpperCase() + missingField.slice(1)
+				} is required`,
+				field: missingField,
+			});
+		}
 
 		// find the user by email
 		const user = await User.findOne({ email: caseClearEmail });
 		if (!user) {
-			return res.status(400).json({ error: "Invalid email or password" });
+			return res.status(400).json({
+				error: "Invalid email or password",
+				field: "email",
+			});
 		}
 
 		// compare the password
 		const isMatch = await bcrypt.compare(password, user.password);
 		if (!isMatch) {
-			return res.status(400).json({ error: "Invalid email or password" });
+			return res.status(400).json({
+				error: "Invalid email or password",
+				field: "password",
+			});
 		}
 
 		// OPTIONAL: If you want to enforce email verification before login:
