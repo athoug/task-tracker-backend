@@ -12,6 +12,7 @@ const userSchema = new mongoose.Schema(
 			unique: true,
 			lowercase: true,
 			trim: true,
+			match: [/^\S+@\S+\.\S+$/, "Please use a valid email address"],
 		},
 		avatar: {
 			type: String,
@@ -20,6 +21,13 @@ const userSchema = new mongoose.Schema(
 		password: {
 			type: String,
 			required: true,
+			validate: {
+				validator: function (v) {
+					return /^(?=.*[A-Z])(?=.*[a-z])(?=.*\d)(?=.*[\W_]).{8,}$/.test(v);
+				},
+				message:
+					"Password must be at least 8 characters long and include uppercase, lowercase, number, and special character.",
+			},
 		},
 		emailVerified: {
 			type: Boolean,

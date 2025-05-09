@@ -17,6 +17,16 @@ exports.register = async (req, res) => {
 			return res.status(400).json({ error: "User already exists" });
 		}
 
+		// Password strength check (optional if already validated by schema)
+		const strongPasswordRegex =
+			/^(?=.*[A-Z])(?=.*[a-z])(?=.*\d)(?=.*[\W_]).{8,}$/;
+		if (!strongPasswordRegex.test(password)) {
+			return res.status(400).json({
+				error:
+					"Password must be at least 8 characters and include uppercase, lowercase, number, and special character.",
+			});
+		}
+
 		// 1b. Hash password
 		const hashedPassword = await bcrypt.hash(password, 10);
 
@@ -107,13 +117,12 @@ exports.login = async (req, res) => {
 			process.env.JWT_SECRET, // e.g., "mysecret" (store in .env)
 			{ expiresIn: "1d" } // token valid for 1 day
 		);
-
 		res.status(202).json({
 			message: "Login successful",
 			token,
 			user: {
 				_id: user._id,
-				name: user.name,
+				name: user.name.split(" ")[0],
 				email: user.email,
 				emailVerified: user.emailVerified,
 			},
