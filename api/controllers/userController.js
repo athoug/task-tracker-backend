@@ -14,7 +14,9 @@ exports.register = async (req, res) => {
 		// 1a. check if the user exists
 		const existingUser = await User.findOne({ email: caseClearEmail });
 		if (existingUser) {
-			return res.status(400).json({ error: "User already exists" });
+			return res
+				.status(400)
+				.json({ error: "User already exists", field: "email" });
 		}
 
 		// Password strength check (optional if already validated by schema)
@@ -24,6 +26,7 @@ exports.register = async (req, res) => {
 			return res.status(400).json({
 				error:
 					"Password must be at least 8 characters and include uppercase, lowercase, number, and special character.",
+				field: "password",
 			});
 		}
 
