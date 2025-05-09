@@ -308,7 +308,7 @@ exports.resetPassword = async (req, res) => {
 		// Password strength check (optional if already validated by schema)
 		const strongPasswordRegex =
 			/^(?=.*[A-Z])(?=.*[a-z])(?=.*\d)(?=.*[\W_]).{8,}$/;
-		if (!strongPasswordRegex.test(password)) {
+		if (!strongPasswordRegex.test(newPassword)) {
 			return res.status(400).json({
 				error:
 					"Password must be at least 8 characters and include uppercase, lowercase, number, and special character.",
