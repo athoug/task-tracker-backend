@@ -238,9 +238,23 @@ exports.requestPasswordReset = async (req, res) => {
 		const { email } = req.body;
 		const caseClearEmail = email?.toLowerCase();
 
+		// Check for missing fields
+		if (!email) {
+			const missingField = "email";
+			return res.status(400).json({
+				error: `${
+					missingField.charAt(0).toUpperCase() + missingField.slice(1)
+				} is required`,
+				field: missingField,
+			});
+		}
+
 		const user = await User.findOne({ email: caseClearEmail });
 		if (!user) {
-			return res.status(400).json({ error: "Invalid request" });
+			return res.status(400).json({
+				error: "Invalid email",
+				field: "email",
+			});
 		}
 
 		// Generate reset token + expiration (1 hour from now)
@@ -276,8 +290,19 @@ exports.resetPassword = async (req, res) => {
 	try {
 		const { token, newPassword } = req.body;
 
-		if (!token || !newPassword) {
-			return res.status(400).json({ error: "Missing token or new password" });
+		if (!token) {
+			return res.status(400).json({ error: "Missing token" });
+		}
+
+		// Check for missing fields
+		if (!newPassword) {
+			const missingField = "password";
+			return res.status(400).json({
+				error: `${
+					missingField.charAt(0).toUpperCase() + missingField.slice(1)
+				} is required`,
+				field: missingField,
+			});
 		}
 
 		// find user by reset token
@@ -287,7 +312,10 @@ exports.resetPassword = async (req, res) => {
 		});
 
 		if (!user) {
-			return res.status(400).json({ error: "Invalid or expired reset token" });
+			return res.status(400).json({
+				error: "Invalid or expired reset token",
+				field: "email",
+			});
 		}
 
 		const hashedPassword = await bcrypt.hash(newPassword, 10);
