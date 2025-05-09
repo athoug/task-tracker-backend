@@ -50,7 +50,7 @@ exports.register = async (req, res) => {
 		const savedUser = await newUser.save();
 
 		// 1f. Send verification email
-		const verifyLink = `${process.env.CLIENT_URL}/api/users/verify-email?token=${emailToken}`;
+		const verifyLink = `tasko://verify-email?token=${emailToken}`;
 		// Example: http://localhost:3000/verify-email?token=xxx
 		// You might have a dedicated endpoint on your frontend to handle email verification
 
@@ -272,6 +272,8 @@ exports.requestPasswordReset = async (req, res) => {
 			html: `
 				 <p>You requested a password reset. Click the link below to set a new password:</p>
 				 <a href="${resetLink}">Reset Password</a>
+				 <br>
+				 <a href="${resetLink}">Verify Email</a>
 				 <br>
 				 <p>If you did not request a password reset, please ignore this email.</p>
 			 `,
