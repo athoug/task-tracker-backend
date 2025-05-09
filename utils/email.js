@@ -1,24 +1,26 @@
-const nodemailer = require('nodemailer');
+const { Resend } = require("resend");
+
+const resend = new Resend(process.env.RESEND_API_KEY); // Set in .env
 
 const sendEmail = async ({ to, subject, html }) => {
-	// Configure the transporter. You may have credentials in .env
-	const transporter = nodemailer.createTransport({
-		host: process.env.SMTP_HOST, // e.g. 'smtp.mailtrap.io'
-		port: process.env.SMTP_PORT, // e.g. 587
-		auth: {
-			user: process.env.SMTP_USER, // e.g. 'someuser'
-			pass: process.env.SMTP_PASS, // e.g. 'somepass'
-		},
-	});
+	try {
+		const { data, error } = await resend.emails.send({
+			from: process.env.EMAIL_FROM || "no-reply@itsmetasko.com",
+			to,
+			subject,
+			html,
+		});
 
-	const mailOptions = {
-		from: process.env.EMAIL_FROM || 'no-reply@example.com',
-		to,
-		subject,
-		html,
-	};
+		if (error) {
+			console.error("Resend error:", error);
+			throw new Error("Failed to send email");
+		}
 
-	return transporter.sendMail(mailOptions);
+		return data;
+	} catch (err) {
+		console.error("Error in sendEmail:", err);
+		throw err;
+	}
 };
 
 module.exports = { sendEmail };
