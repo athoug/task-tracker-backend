@@ -305,6 +305,17 @@ exports.resetPassword = async (req, res) => {
 			});
 		}
 
+		// Password strength check (optional if already validated by schema)
+		const strongPasswordRegex =
+			/^(?=.*[A-Z])(?=.*[a-z])(?=.*\d)(?=.*[\W_]).{8,}$/;
+		if (!strongPasswordRegex.test(password)) {
+			return res.status(400).json({
+				error:
+					"Password must be at least 8 characters and include uppercase, lowercase, number, and special character.",
+				field: "password",
+			});
+		}
+
 		// find user by reset token
 		const user = await User.findOne({
 			passwordResetToken: token,
