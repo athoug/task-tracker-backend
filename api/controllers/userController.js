@@ -53,16 +53,25 @@ exports.register = async (req, res) => {
 		const verifyLink = `tasko://verify-email?token=${emailToken}`;
 		// Example: http://localhost:3000/verify-email?token=xxx
 		// You might have a dedicated endpoint on your frontend to handle email verification
-
-		// TODO: make this work with real mailtrap later
 		await sendEmail({
 			to: savedUser.email,
 			subject: "Please Verify Your Email",
 			html: `
-		    <h3>Welcome, ${savedUser.name}!</h3>
-		    <p>Click the link below to verify your email:</p>
-		    <a href="${verifyLink}">Verify Email</a>
-		  `,
+				<!DOCTYPE html>
+				<html>
+					<body style="font-family: sans-serif; color: #333;">
+						<h2>Welcome to Tasko, ${savedUser.name}!</h2>
+						<p>Please verify your email by clicking the button below:</p>
+						<p style="margin-top: 20px;">
+							<a href="${verifyLink}" style="background-color: #0E243E; color: white; padding: 10px 15px; border-radius: 5px; text-decoration: none;">
+								Verify Email
+							</a>
+						</p>
+						<p>If the button doesn’t work, copy and paste this URL into your browser:</p>
+						<p><a href="${verifyLink}">${verifyLink}</a></p>
+					</body>
+				</html>
+			`,
 		});
 
 		console.log("User created, returning response");
@@ -266,17 +275,26 @@ exports.requestPasswordReset = async (req, res) => {
 		// Send email with reset link
 		// const resetLink = `${process.env.CLIENT_URL}/reset-password?token=${resetToken}`;
 		const resetLink = `tasko://reset-password?token=${resetToken}`;
+
 		await sendEmail({
 			to: user.email,
 			subject: "Password Reset Request",
 			html: `
-				 <p>You requested a password reset. Click the link below to set a new password:</p>
-				 <a href="${resetLink}">Reset Password</a>
-				 <br>
-				 <a href="${resetLink}">Verify Email</a>
-				 <br>
-				 <p>If you did not request a password reset, please ignore this email.</p>
-			 `,
+				<!DOCTYPE html>
+				<html>
+					<body style="font-family: sans-serif; color: #333;">
+						<h2>Password Reset</h2>
+						<p>You requested a password reset. Click the button below to reset it:</p>
+						<p style="margin-top: 20px;">
+							<a href="${resetLink}" style="background-color: #0E243E; color: white; padding: 10px 15px; border-radius: 5px; text-decoration: none;">
+								Reset Password
+							</a>
+						</p>
+						<p>If the button doesn’t work, copy and paste this URL into your browser:</p>
+						<p><a href="${resetLink}">${resetLink}</a></p>
+					</body>
+				</html>
+			`,
 		});
 
 		return res.status(200).json({
