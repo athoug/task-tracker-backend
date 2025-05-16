@@ -39,4 +39,6 @@ router.patch("/update-password", authMiddleware, userController.updatePassword);
 // request delete account
 router.delete("/delete-account", authMiddleware, userController.deleteAccount);
 
+router.get("/profile", authMiddleware, userController.getProfile);
+
 module.exports = router;
