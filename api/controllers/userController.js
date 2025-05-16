@@ -87,7 +87,7 @@ exports.register = async (req, res) => {
 			message: `hey ${name} you have register successfully. Please check your email to verify your account.`,
 			user: {
 				id: savedUser._id,
-				name: savedUser.name,
+				name: savedUser.name.split(" ")[0],
 				email: savedUser.email,
 				profileIcon: savedUser.profileIcon,
 			},
